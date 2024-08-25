@@ -7,7 +7,7 @@ import ClientError from '../errors/client-error';
 
 async function getActivies(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
-    '/trip/:tripId/activity',
+    '/trips/:tripId/activities',
     {
       schema: {
         params: z.object({
@@ -18,12 +18,12 @@ async function getActivies(app: FastifyInstance) {
     async (request) => {
       const { tripId } = request.params;
 
-      const trip = await prisma.trip.findUnique({
+      const trip = await prisma.trips.findUnique({
         where: {
           id: tripId,
         },
         include: {
-          activity: {
+          activities: {
             orderBy: {
               occurs_at: 'asc',
             },
@@ -47,7 +47,7 @@ async function getActivies(app: FastifyInstance) {
 
         return {
           date,
-          activities: trip.activity.filter((activity) => {
+          activities: trip.activities.filter((activity) => {
             return dayjs(activity.occurs_at).isSame(date, 'day');
           }),
         };

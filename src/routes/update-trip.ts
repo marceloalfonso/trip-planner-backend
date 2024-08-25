@@ -7,7 +7,7 @@ import ClientError from '../errors/client-error';
 
 async function updateTrip(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().put(
-    '/trip/:tripId',
+    '/trips/:tripId',
     {
       schema: {
         params: z.object({
@@ -24,7 +24,7 @@ async function updateTrip(app: FastifyInstance) {
       const { tripId } = request.params;
       const { destination, starts_at, ends_at } = request.body;
 
-      const trip = await prisma.trip.findUnique({
+      const trip = await prisma.trips.findUnique({
         where: {
           id: tripId,
         },
@@ -42,7 +42,7 @@ async function updateTrip(app: FastifyInstance) {
         throw new ClientError('Invalid trip end date.');
       }
 
-      await prisma.trip.update({
+      await prisma.trips.update({
         where: {
           id: tripId,
         },

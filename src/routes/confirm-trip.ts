@@ -10,7 +10,7 @@ import prisma from '../lib/prisma';
 
 async function confirmTrip(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
-    '/trip/:tripId/confirm',
+    '/trips/:tripId/confirm',
     {
       schema: {
         params: z.object({
@@ -21,12 +21,12 @@ async function confirmTrip(app: FastifyInstance) {
     async (request, reply) => {
       const { tripId } = request.params;
 
-      const trip = await prisma.trip.findUnique({
+      const trip = await prisma.trips.findUnique({
         where: {
           id: tripId,
         },
         include: {
-          participant: {
+          participants: {
             where: {
               is_owner: false,
             },
@@ -39,10 +39,10 @@ async function confirmTrip(app: FastifyInstance) {
       }
 
       if (trip.is_confirmed) {
-        return reply.redirect(`${env.WEB_BASE_URL}/trip/${tripId}`);
+        return reply.redirect(`${env.WEB_BASE_URL}/trips/${tripId}`);
       }
 
-      await prisma.trip.update({
+      await prisma.trips.update({
         where: {
           id: tripId,
         },
@@ -58,8 +58,8 @@ async function confirmTrip(app: FastifyInstance) {
 
       await Promise.all(
         // Enviar todos os e-mails em paralelo
-        trip.participant.map(async (participant) => {
-          const confirmationLink = `${env.API_BASE_URL}/participant/${participant.id}/confirm`;
+        trip.participants.map(async (participant) => {
+          const confirmationLink = `${env.API_BASE_URL}/participants/${participant.id}/confirm`;
 
           const message = await mail.sendMail({
             from: {
@@ -85,7 +85,7 @@ async function confirmTrip(app: FastifyInstance) {
         })
       );
 
-      return reply.redirect(`${env.WEB_BASE_URL}/trip/${tripId}`);
+      return reply.redirect(`${env.WEB_BASE_URL}/trips/${tripId}`);
     }
   );
 }

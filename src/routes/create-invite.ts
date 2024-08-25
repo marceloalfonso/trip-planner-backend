@@ -10,7 +10,7 @@ import prisma from '../lib/prisma';
 
 async function createInvite(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
-    '/trip/:tripId/invite',
+    '/trips/:tripId/invite',
     {
       schema: {
         params: z.object({
@@ -25,7 +25,7 @@ async function createInvite(app: FastifyInstance) {
       const { tripId } = request.params;
       const { email } = request.body;
 
-      const trip = await prisma.trip.findUnique({
+      const trip = await prisma.trips.findUnique({
         where: {
           id: tripId,
         },
@@ -35,7 +35,7 @@ async function createInvite(app: FastifyInstance) {
         throw new ClientError('Trip not found.');
       }
 
-      const participant = await prisma.participant.create({
+      const participant = await prisma.participants.create({
         data: {
           email,
           trip_id: tripId,
@@ -47,7 +47,7 @@ async function createInvite(app: FastifyInstance) {
 
       const mail = await getMailClient();
 
-      const confirmationLink = `${env.API_BASE_URL}/participant/${participant.id}/confirm`;
+      const confirmationLink = `${env.API_BASE_URL}/participants/${participant.id}/confirm`;
 
       const message = await mail.sendMail({
         from: {

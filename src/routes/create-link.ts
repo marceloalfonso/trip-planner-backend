@@ -6,7 +6,7 @@ import ClientError from '../errors/client-error';
 
 async function createLink(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
-    '/trip/:tripId/link',
+    '/trips/:tripId/links',
     {
       schema: {
         params: z.object({
@@ -22,7 +22,7 @@ async function createLink(app: FastifyInstance) {
       const { tripId } = request.params;
       const { title, url } = request.body;
 
-      const trip = await prisma.trip.findUnique({
+      const trip = await prisma.trips.findUnique({
         where: {
           id: tripId,
         },
@@ -32,7 +32,7 @@ async function createLink(app: FastifyInstance) {
         throw new ClientError('Trip not found.');
       }
 
-      const link = await prisma.link.create({
+      const link = await prisma.links.create({
         data: {
           title,
           url,

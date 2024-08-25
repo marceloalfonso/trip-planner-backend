@@ -7,7 +7,7 @@ import prisma from '../lib/prisma';
 
 async function confirmParticipant(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
-    '/participant/:participantId/confirm',
+    '/participants/:participantId/confirm',
     {
       schema: {
         params: z.object({
@@ -18,7 +18,7 @@ async function confirmParticipant(app: FastifyInstance) {
     async (request, reply) => {
       const { participantId } = request.params;
 
-      const participant = await prisma.participant.findUnique({
+      const participant = await prisma.participants.findUnique({
         where: {
           id: participantId,
         },
@@ -30,11 +30,11 @@ async function confirmParticipant(app: FastifyInstance) {
 
       if (participant.is_confirmed) {
         return reply.redirect(
-          `${env.WEB_BASE_URL}/trip/${participant.trip_id}`
+          `${env.WEB_BASE_URL}/trips/${participant.trip_id}`
         );
       }
 
-      await prisma.participant.update({
+      await prisma.participants.update({
         where: {
           id: participantId,
         },
@@ -43,7 +43,7 @@ async function confirmParticipant(app: FastifyInstance) {
         },
       });
 
-      return reply.redirect(`${env.WEB_BASE_URL}/trip/${participant.trip_id}`);
+      return reply.redirect(`${env.WEB_BASE_URL}/trips/${participant.trip_id}`);
     }
   );
 }

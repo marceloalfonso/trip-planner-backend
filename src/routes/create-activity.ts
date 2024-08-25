@@ -7,7 +7,7 @@ import ClientError from '../errors/client-error';
 
 async function createActivity(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
-    '/trip/:tripId/activity',
+    '/trips/:tripId/activities',
     {
       schema: {
         params: z.object({
@@ -23,7 +23,7 @@ async function createActivity(app: FastifyInstance) {
       const { tripId } = request.params;
       const { title, occurs_at } = request.body;
 
-      const trip = await prisma.trip.findUnique({
+      const trip = await prisma.trips.findUnique({
         where: {
           id: tripId,
         },
@@ -41,7 +41,7 @@ async function createActivity(app: FastifyInstance) {
         throw new ClientError('Invalid activity date.');
       }
 
-      const activity = await prisma.activity.create({
+      const activity = await prisma.activities.create({
         data: {
           title,
           occurs_at,

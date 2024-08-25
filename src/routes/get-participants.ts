@@ -6,7 +6,7 @@ import ClientError from '../errors/client-error';
 
 async function getParticipants(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
-    '/trip/:tripId/participant',
+    '/trips/:tripId/participants',
     {
       schema: {
         params: z.object({
@@ -17,12 +17,12 @@ async function getParticipants(app: FastifyInstance) {
     async (request) => {
       const { tripId } = request.params;
 
-      const trip = await prisma.trip.findUnique({
+      const trip = await prisma.trips.findUnique({
         where: {
           id: tripId,
         },
         include: {
-          participant: {
+          participants: {
             select: {
               id: true,
               name: true,
@@ -37,7 +37,7 @@ async function getParticipants(app: FastifyInstance) {
         throw new ClientError('Trip not found.');
       }
 
-      return { participants: trip.participant };
+      return { participants: trip.participants };
     }
   );
 }

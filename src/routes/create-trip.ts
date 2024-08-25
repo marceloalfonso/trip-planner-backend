@@ -10,7 +10,7 @@ import prisma from '../lib/prisma';
 
 async function createTrip(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().post(
-    '/trip',
+    '/trips',
     {
       schema: {
         body: z.object({
@@ -41,12 +41,12 @@ async function createTrip(app: FastifyInstance) {
         throw new ClientError('Invalid trip end date.');
       }
 
-      const trip = await prisma.trip.create({
+      const trip = await prisma.trips.create({
         data: {
           destination,
           starts_at,
           ends_at,
-          participant: {
+          participants: {
             createMany: {
               data: [
                 {
@@ -67,7 +67,7 @@ async function createTrip(app: FastifyInstance) {
       const formattedStartDate = dayjs(starts_at).format('LL');
       const formattedEndDate = dayjs(ends_at).format('LL');
 
-      const confirmationLink = `${env.API_BASE_URL}/trip/${trip.id}/confirm`;
+      const confirmationLink = `${env.API_BASE_URL}/trips/${trip.id}/confirm`;
 
       const mail = await getMailClient();
 

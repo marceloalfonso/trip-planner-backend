@@ -6,7 +6,7 @@ import ClientError from '../errors/client-error';
 
 async function getParticipant(app: FastifyInstance) {
   app.withTypeProvider<ZodTypeProvider>().get(
-    '/participant/:participantId',
+    '/participants/:participantId',
     {
       schema: {
         params: z.object({
@@ -17,7 +17,7 @@ async function getParticipant(app: FastifyInstance) {
     async (request) => {
       const { participantId } = request.params;
 
-      const participant = await prisma.participant.findUnique({
+      const participant = await prisma.participants.findUnique({
         select: {
           id: true,
           name: true,
